@@ -53,6 +53,6 @@ jobs:
            -backend-config="key=terraform.tfstate" \
            -reconfigure
         
-        terraform plan -var-file=template.tfvars -out=tfplan
+        terraform plan -var-file=terraform.tfvars -out=tfplan
       working-directory: ./terraform-templates/connectivity
   
