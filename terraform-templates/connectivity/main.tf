@@ -27,7 +27,7 @@ module "subnets_hub" {
 }
 
 module "app_gateway" {
-  source = "../../terraform-modules/application-gateway"
+  source = "../../terraform-modules/app-gateway"
   depends_on = [ module.resource_group ]
   resource_group_name   = var.applicationGatewayResourceGroupName
   location              = var.applicationGatewayLocation
