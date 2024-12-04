@@ -2,13 +2,13 @@ name: Terraform Deployment Pipeline
 
 
 on: 
-  workflow_dispatch:
+
   push:
     branches:
       -main
-    paths:
-      - 'product/**'
-      - '.github/workflow/**'
+    # paths:
+    #   - 'product/**'
+    #   - '.github/workflow/**'
 
       
 env:
