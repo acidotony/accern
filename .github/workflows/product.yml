@@ -10,6 +10,7 @@ on:
       - 'product/**'
       - '.github/workflow/**'
 
+      
 env:
   WORKING_DIRECTORY: "product"
   APPLICATION_NAME: "azlzproduct"

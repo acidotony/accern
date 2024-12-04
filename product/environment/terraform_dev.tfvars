@@ -8,8 +8,6 @@ tags = {
 
 address_space_spoke = ["10.1.0.0/16"]
 
-
-
 subnet_spoke_aks_name = "acn-aks-dev-eastus2-01-subnet"
 
 subnets_spoke = {
