@@ -26,14 +26,14 @@ jobs:
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v3
-      with:
-        persist-credentials: true
-        fetch-depth: 0
+      
 
     - name: hashicorp/setup-terraform@4
       with:
         terraform_version: 1.9.3
         terraform_wrapper: false
+
+      
 
     - name: Azure Login
       uses: azure/login@v1
