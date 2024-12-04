@@ -6,7 +6,7 @@ on:
       - main
     paths:
       - '/terraform-templates/product/**'
-      - '.github/workflows/**'
+      - '.github/workflows/lz_product.yml'
       
 env:
   WORKING_DIRECTORY: "product"
