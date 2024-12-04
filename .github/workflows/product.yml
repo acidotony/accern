@@ -6,9 +6,9 @@ on:
   push:
     branches:
       - main
-    # paths:
-    #   - 'product/**'
-    #   - '.github/workflow/**'
+    paths:
+      - 'product/**'
+      - '.github/workflow/**'
 
       
 env:
@@ -20,7 +20,7 @@ permissions:
   contents: read
 
 jobs:
-  terraform:
+  Prerequirements:
     name: Pre-requirements
     runs-on: ubuntu-latest
     steps:
@@ -34,28 +34,32 @@ jobs:
         terraform_version: 1.9.3
         terraform_wrapper: false
 
-      
-
     - name: Azure Login
       uses: azure/login@v1
       with:
         client-id: ${{secrets.AZURE_CLIENT_ID}}
         tenant-id: ${{secrets.AZURE_TENANT_ID}}
         subscription-id: ${{secrets.AZURE_SUBSCRIPTION_ID}}
-
-  # terraform-plan:
-
+    
+    - name: Terraform Init
+      run: |
+        terraform init \
+           -backend-config="resource_group_name=${{ env.BACKEND_RESOURCE_GROUP_NAME }}" \
+           -backend-config="storage_account_name=${{ env.BACKEND_STORAGE_ACCOUNT_NAME }}" \
+           -backend-config="container_name=${{ env.BACKEND_CONTAINER_NAME }}" \
+           -backend-config="key=terraform.tfstate" \
+           -reconfigure
 
   #   - name: Terraform Init and Plan
-  #     env:
-  #       ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
-  #       ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
-  #       ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
-  #       ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
-  #     run: |
-  #       echo "#######################################"
-  #       echo "Setting up Terraform authentication using Service Principal"
-  #       echo "#######################################"
+  # #     env:
+  # #       ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+  # #       ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+  # #       ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+  # #       ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+      # run: |
+      #   echo "#######################################"
+      #   echo "Setting up Terraform authentication using Service Principal"
+      #   echo "#######################################"
 
   #       export ARM_SUBSCRIPTION_ID=${{ secrets.ARM_SUBSCRIPTION_ID }}
   #       export ARM_TENANT_ID=${{ secrets.ARM_TENANT_ID }}
