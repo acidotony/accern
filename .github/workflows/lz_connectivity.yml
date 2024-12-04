@@ -9,8 +9,7 @@ on:
       - '.github/workflows/**'
       
 env:
-  WORKING_DIRECTORY: "terraform-templates/connectivity"
-  APPLICATION_NAME: "azlzproduct"
+  APPLICATION_NAME: "azlzconnectivity"
 
 permissions:
   id-token: write
@@ -54,4 +53,5 @@ jobs:
            -reconfigure
         
         terraform plan -var-file=template.tfvars -out=tfplan
+      working-directory: ./terraform-templates/connectivity
   
