@@ -1,0 +1,159 @@
+name: Terraform Product deployment 
+
+on: 
+  push:
+    branches:
+      - main
+    paths:
+      - '/terraform-templates/product/**'
+      - '.github/workflows/**'
+      
+env:
+  WORKING_DIRECTORY: "product"
+  APPLICATION_NAME: "azlzproduct"
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  TerraformProductDeployment:
+    name: Terraform Product Deployment
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+      
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_version: 1.9.3
+        terraform_wrapper: false
+
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        client-id: ${{secrets.AZURE_CLIENT_ID}}
+        tenant-id: ${{secrets.AZURE_TENANT_ID}}
+        subscription-id: ${{secrets.AZURE_SUBSCRIPTION_ID}}
+    
+    - name: Terraform Init
+      env:
+        ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+        ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+        ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      run: |
+        terraform init \
+           -backend-config="resource_group_name=${{ vars.BACKEND_RESOURCE_GROUP_NAME }}" \
+           -backend-config="storage_account_name=${{ vars.BACKEND_STORAGE_ACCOUNT_NAME }}" \
+           -backend-config="container_name=${{ vars.BACKEND_CONTAINER_NAME }}" \
+           -backend-config="access_key=${{ secrets.BACKEND_ACCESS_KEY }}" \
+           -backend-config="key=terraform.tfstate" \
+           -reconfigure
+      working-directory: ./terraform-templates/product
+  #   - name: Terraform Init and Plan
+  # #     env:
+  # #       ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+  # #       ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+  # #       ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+  # #       ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+      # run: |
+      #   echo "#######################################"
+      #   echo "Setting up Terraform authentication using Service Principal"
+      #   echo "#######################################"
+
+  #       export ARM_SUBSCRIPTION_ID=${{ secrets.ARM_SUBSCRIPTION_ID }}
+  #       export ARM_TENANT_ID=${{ secrets.ARM_TENANT_ID }}
+  #       export ARM_CLIENT_ID=${{ secrets.ARM_CLIENT_ID }}
+  #       export ARM_CLIENT_SECRET=${{ secrets.ARM_CLIENT_SECRET }}
+
+  #       echo "#######################################"
+  #       echo "Generating .tfvars file from template"
+  #       echo "#######################################"
+  #       sed -i "s|{{environment}}|${{ secrets.ENVIRONMENT }}|g" template.tfvars
+  #       sed -i "s|{{location}}|${{ secrets.LOCATION }}|g" template.tfvars
+  #       sed -i "s|{{addressSpaceConsole}}|${{ secrets.NETWORK_ADDRESS_SPACE_CONSOLE }}|g" template.tfvars
+  #       sed -i "s|{{addressSpaceAppgatewaySubnet}}|${{ secrets.NETWORK_ADDRESS_SPACE_APPGATEWAY_SUBNET }}|g" template.tfvars
+  #       sed -i "s|{{addressSpaceContainersSubnet}}|${{ secrets.NETWORK_ADDRESS_SPACE_CONTAINERS_SUBNET }}|g" template.tfvars
+  #       sed -i "s|{{addressSpaceDataSubnet}}|${{ secrets.NETWORK_ADDRESS_SPACE_DATA_SUBNET }}|g" template.tfvars
+
+  #       echo "Generated .tfvars file:"
+  #       cat template.tfvars
+
+  #       echo "#######################################"
+  #       echo "Initializing Terraform"
+  #       echo "#######################################"
+  #       terraform init \
+  #         -backend-config="resource_group_name=${{ secrets.BACKEND_RESOURCE_GROUP_NAME }}" \
+  #         -backend-config="storage_account_name=${{ secrets.BACKEND_STORAGE_ACCOUNT_NAME }}" \
+  #         -backend-config="container_name=${{ secrets.BACKEND_CONTAINER_NAME }}" \
+  #         -backend-config="key=terraform.tfstate" \
+  #         -reconfigure
+
+  #       echo "#######################################"
+  #       echo "Planning Terraform"
+  #       echo "#######################################"
+  #       terraform plan \
+  #         -var-file=template.tfvars \
+  #         -out=tfplan
+  #     working-directory: MSI_full_enviroment/Terraform-templates
+
+  # terraform-apply:
+  #   name: Terraform Apply
+  #   needs: terraform-plan
+  #   if: success() && github.event.inputs.triggerTerraformApply == 'true'
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - name: Checkout Repository
+  #     uses: actions/checkout@v3
+  #     with:
+  #       fetch-depth: 0
+
+  #   - name: Terraform Apply
+  #     env:
+  #       ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+  #       ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+  #       ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+  #       ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+  #     run: |
+  #       echo "#######################################"
+  #       echo "Setting up Terraform authentication using Service Principal"
+  #       echo "#######################################"
+
+  #       export ARM_SUBSCRIPTION_ID=${{ secrets.ARM_SUBSCRIPTION_ID }}
+  #       export ARM_TENANT_ID=${{ secrets.ARM_TENANT_ID }}
+  #       export ARM_CLIENT_ID=${{ secrets.ARM_CLIENT_ID }}
+  #       export ARM_CLIENT_SECRET=${{ secrets.ARM_CLIENT_SECRET }}
+
+  #       echo "#######################################"
+  #       echo "Generating .tfvars file from template"
+  #       echo "#######################################"
+  #       sed -i "s|{{environment}}|${{ secrets.ENVIRONMENT }}|g" template.tfvars
+  #       sed -i "s|{{location}}|${{ secrets.LOCATION }}|g" template.tfvars
+  #       sed -i "s|{{addressSpaceConsole}}|${{ secrets.NETWORK_ADDRESS_SPACE_CONSOLE }}|g" template.tfvars
+  #       sed -i "s|{{addressSpaceAppgatewaySubnet}}|${{ secrets.NETWORK_ADDRESS_SPACE_APPGATEWAY_SUBNET }}|g" template.tfvars
+  #       sed -i "s|{{addressSpaceContainersSubnet}}|${{ secrets.NETWORK_ADDRESS_SPACE_CONTAINERS_SUBNET }}|g" template.tfvars
+  #       sed -i "s|{{addressSpaceDataSubnet}}|${{ secrets.NETWORK_ADDRESS_SPACE_DATA_SUBNET }}|g" template.tfvars
+
+  #       echo "Generated .tfvars file:"
+  #       cat template.tfvars
+
+  #       echo "#######################################"
+  #       echo "Initializing Terraform"
+  #       echo "#######################################"
+  #       terraform init \
+  #         -backend-config="resource_group_name=${{ secrets.BACKEND_RESOURCE_GROUP_NAME }}" \
+  #         -backend-config="storage_account_name=${{ secrets.BACKEND_STORAGE_ACCOUNT_NAME }}" \
+  #         -backend-config="container_name=${{ secrets.BACKEND_CONTAINER_NAME }}" \
+  #         -backend-config="key=terraform.tfstate" \
+  #         -reconfigure
+
+  #       echo "#######################################"
+  #       echo "Applying Terraform"
+  #       echo "#######################################"
+  #       terraform apply \
+  #         -var-file=template.tfvars \
+  #         --auto-approve
+  #     working-directory: MSI_full_enviroment/Terraform-templates

@@ -1,4 +1,4 @@
-name: Terraform Deployment Pipeline
+name: Terraform Product deployment 
 
 on: 
   push:
@@ -9,7 +9,7 @@ on:
       - '.github/workflows/**'
       
 env:
-  WORKING_DIRECTORY: "product"
+  WORKING_DIRECTORY: "terraform-templates/connectivity"
   APPLICATION_NAME: "azlzproduct"
 
 permissions:
@@ -18,7 +18,7 @@ permissions:
 
 jobs:
   TerraformProductDeployment:
-    name: Terraform Product Deployment
+    name: IaC LZ Connectivity Deployment
     runs-on: ubuntu-latest
     steps:
     - name: Checkout Repository
@@ -52,7 +52,7 @@ jobs:
            -backend-config="access_key=${{ secrets.BACKEND_ACCESS_KEY }}" \
            -backend-config="key=terraform.tfstate" \
            -reconfigure
-      working-directory: ./terraform-templates/product
+  #    working-directory: ./terraform-templates/product
   #   - name: Terraform Init and Plan
   # #     env:
   # #       ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
