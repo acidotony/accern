@@ -17,8 +17,8 @@ permissions:
   contents: read
 
 jobs:
-  Terraform:
-    name: Pre-requirements
+  TerraformProductDeployment:
+    name: Terraform Product Deployment
     runs-on: ubuntu-latest
     steps:
     - name: Checkout Repository
@@ -31,14 +31,19 @@ jobs:
         terraform_version: 1.9.3
         terraform_wrapper: false
 
-    - name: Azure Login
-      uses: azure/login@v1
-      with:
-        client-id: ${{secrets.AZURE_CLIENT_ID}}
-        tenant-id: ${{secrets.AZURE_TENANT_ID}}
-        subscription-id: ${{secrets.AZURE_SUBSCRIPTION_ID}}
+    # - name: Azure Login
+    #   uses: azure/login@v1
+    #   with:
+    #     client-id: ${{secrets.AZURE_CLIENT_ID}}
+    #     tenant-id: ${{secrets.AZURE_TENANT_ID}}
+    #     subscription-id: ${{secrets.AZURE_SUBSCRIPTION_ID}}
     
     - name: Terraform Init
+      env:
+        ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+        ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+        ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
       run: |
         terraform init \
            -backend-config="resource_group_name=${{ env.BACKEND_RESOURCE_GROUP_NAME }}" \
