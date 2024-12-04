@@ -1,13 +1,13 @@
 
 module "resource_group" {
-  source              = "../../resource-group"
+  source              = "../../terraform-modules/resource-group"
   resource_group_name = var.resourceGroupName
   location            = var.location
   tags                = var.tags
 }
 
 module "vnet_hub" {
-  source              = "../../virtual-network"
+  source              = "../../terraform-modules/virtual-network"
   vnet_name           = var.vnet_hub_name
   location            = module.resource_group.location
   resource_group_name = module.resource_group.resource_group_name
@@ -18,7 +18,7 @@ module "vnet_hub" {
 
 
 module "subnets_hub" {
-  source                = "../../subnets"
+  source                = "../../terraform-modules/subnets"
   resource_group_name   = module.resource_group.resource_group_name
   virtual_network_name  = var.vnet_hub_name
   subnets               = var.subnets_hub
@@ -27,7 +27,7 @@ module "subnets_hub" {
 }
 
 module "app_gateway" {
-  source = "../../Application-Gateway"
+  source = "../../terraform-modules/application-gateway"
   depends_on = [ module.resource_group ]
   resource_group_name   = var.applicationGatewayResourceGroupName
   location              = var.applicationGatewayLocation
