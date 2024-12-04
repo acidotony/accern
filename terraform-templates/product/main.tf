@@ -9,7 +9,7 @@ data "terraform_remote_state" "hub_networking" {
 }
 
 module "resource_group" {
-  source              = "../../resource-group"
+  source              = "../../terraform-modules/resource-group"
   resource_group_name = var.resource_group_name
   location            = var.location
   tags                = var.tags
@@ -17,7 +17,7 @@ module "resource_group" {
 
 
 module "vnet_spoke" {
-  source              = "../../virtual-network"
+  source              = "../../terraform-modules/virtual-network"
   vnet_name           = var.vnet_spoke_name
   location            = var.location
   resource_group_name = var.resource_group_name
@@ -27,7 +27,7 @@ module "vnet_spoke" {
 }
 
 module "subnets_spoke" {
-  source                = "../../subnets"
+  source                = "../../terraform-modules/subnets"
   resource_group_name   = var.resource_group_name
   virtual_network_name  = var.vnet_spoke_name
   subnets               = var.subnets_spoke
@@ -35,7 +35,7 @@ module "subnets_spoke" {
 }
 
 module "nsgs" {
-  source = "../../network-security-group"
+  source = "../../terraform-modules/network-security-group"
 
   for_each = var.nsgs
 
@@ -47,7 +47,7 @@ module "nsgs" {
 }
 
 module "vnet_peering" {
-  source                        = "../../vnet-peering"
+  source                        = "../../terraform-modules/vnet-peering"
   create_vnet                   = true
   create_hub                    = true
   use_existing_hub              = true
@@ -64,7 +64,7 @@ module "vnet_peering" {
 
 
 module "key_vault" {
-  source              = "../../key-vault"
+  source              = "../../terraform-modules/key-vault"
   resource_group_name = var.resource_group_name
   location            = var.location
   name                = var.key_vault_name
@@ -74,7 +74,7 @@ module "key_vault" {
 }
 
 module "storage_account" {
-  source              = "../../storage-account"
+  source              = "../../terraform-modules/storage-account"
   resource_group_name = var.resource_group_name
   location            = var.location
   name                = var.storage_account_name
@@ -83,7 +83,7 @@ module "storage_account" {
 }
 
 module "acr" {
-  source               = "../../ACR"
+  source               = "../../terraform-modules/ACR"
   acr_name             = var.acr_name
   resource_group_name  = var.resource_group_name
   location             = module.resource_group.location
@@ -100,7 +100,7 @@ module "acr" {
 }
 
 module "aks" {
-  source                        = "../../AKS"
+  source                        = "../../terraform-modules/AKS"
 
   aks_name                      = var.aks_name
   location                      = var.location
