@@ -8,7 +8,7 @@ on:
       -main
     paths:
       - 'product/**'
-      - '.github/workflow/product.yml'
+      - '.github/workflow/**'
 
 env:
   WORKING_DIRECTORY: "product"
