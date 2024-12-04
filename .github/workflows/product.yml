@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - 'product/**'
+      ##- 'product/**'
       - '.github/workflows/**'
       
 env:
@@ -46,6 +46,7 @@ jobs:
            -backend-config="container_name=${{ env.BACKEND_CONTAINER_NAME }}" \
            -backend-config="key=terraform.tfstate" \
            -reconfigure
+      working-directory: ./product
 
   #   - name: Terraform Init and Plan
   # #     env:
