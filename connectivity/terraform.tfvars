@@ -31,7 +31,6 @@ nsg_appgw_name = "nsg-appgw-eastus2-01"
 vnet_hub_name  = "acn-hub-eastus2-01-vnet"
 
 #### Application Gateway #######
-
 applicationGatewayResourceGroupName   = "acn-hub-eastus2-rg"
 applicationGatewayLocation            = "eastus2"
 applicationGatewayName                = "acn-hub-eastus2-01-appgtw"
