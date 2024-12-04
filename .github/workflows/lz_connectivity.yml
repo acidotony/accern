@@ -1,12 +1,13 @@
 name: Terraform Product deployment 
 
 on: 
+  
   push:
     branches:
       - main
     paths:
-      - 'connectivity/**'
-      - '.github/workflows/lz_connectivity.yml'
+       - 'terraform-templates/connectivity/**'
+       - '.github/workflows/lz_connectivity.yml'
       
 env:
   APPLICATION_NAME: "azlzconnectivity"
