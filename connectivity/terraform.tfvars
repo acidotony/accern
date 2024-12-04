@@ -75,12 +75,6 @@ vpnServerConfigurationName    = "acn-hub-eastus2-vpn-server-config"
 vpnAuthenticationTypes        = ["ADD"]
 includeClientRootCertificate  = true
 
-# clientRootCertificates = [
-#   {
-#     name            = "example-root-cert"
-#     public_cert_data = "MIIDdzCCAl+gAwIBAgI..."
-#   }
-# ]
 vpnTags = {
   environment = "Production"
   deploymentBy = "Terraform"
