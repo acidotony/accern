@@ -269,3 +269,11 @@ variable "routeTableTags" {
   description = "Tags to assign to the resources"
   type        = map(string)
 }
+
+##### Deployment Flags #####
+
+variable "deploy_app_gateway" {
+  description = "Flag to determine whether to deploy the Application Gateway"
+  type        = bool
+  default     = false
+}

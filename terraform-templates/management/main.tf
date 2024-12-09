@@ -51,21 +51,21 @@ module "management_groups_level2" {
       name           = "acn-platform-services"
       display_name   = "Accern Platform Services"
       parent_id      = "/providers/Microsoft.Management/managementGroups/acn-platform"
-      subscription_ids = ["acc-platform-managment id", "cc-platform-connectivity id"]
+      subscription_ids = ["570c29bd5a12468199c29547830dfabb", "56d8a3f1dd0644428a8cf4441aef7471"]
 
     },
     {
       name           = "acn-production"
       display_name   = "Accern Landing Zones Production"
       parent_id      = "/providers/Microsoft.Management/managementGroups/acn-landingzones"
-      subscription_ids = ["acn-production id"]
+      subscription_ids = ["94194454366747cba7ce52840f429aa9"]
 
     },
         {
       name           = "acn-development"
       display_name   = "Accern Landing Zones Development"
       parent_id      = "/providers/Microsoft.Management/managementGroups/acn-landingzones"
-      subscription_ids = ["acn-development id"]
+      subscription_ids = [" f9a902feb24f4d6cadbf93fd8ad934ac"]
 
     }
   ]

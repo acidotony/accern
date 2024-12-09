@@ -1,3 +1,9 @@
+###### Deplyment Flags #####
+
+deploy_app_gateway = true
+
+
+###### Global ######
 resourceGroupName = "acn-hub-eastus2-rg"
 location          = "eastus2"
 tags = {

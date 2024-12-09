@@ -28,6 +28,7 @@ module "subnets_hub" {
 
 module "app_gateway" {
   source = "../../terraform-modules/app-gateway"
+  count  = var.deploy_app_gateway ? 1 : 0
   depends_on = [ module.resource_group ]
   resource_group_name   = var.applicationGatewayResourceGroupName
   location              = var.applicationGatewayLocation
