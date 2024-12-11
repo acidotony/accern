@@ -26,6 +26,22 @@ module "subnets_hub" {
 
 }
 
+module "application_gateway_nsg" {
+  source              = "../../terraform-modules/network-security-group"
+  name                = var.applicationGatewayNsgName
+  location            = var.applicationGatewayLocation
+  resource_group_name = var.applicationGatewayResourceGroupName
+  rules               = var.applicationGatewayNsgRules
+
+  depends_on = [module.resource_group, module.subnets_hub]
+}
+
+resource "azurerm_subnet_network_security_group_association" "this" {
+  subnet_id                 = module.subnets_hub.subnet_ids[var.applicationGatewaySubnetName]
+  network_security_group_id = module.application_gateway_nsg.id
+
+}
+
 module "app_gateway" {
   source = "../../terraform-modules/app-gateway"
   count  = var.deploy_app_gateway ? 1 : 0

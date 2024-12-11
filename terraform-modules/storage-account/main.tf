@@ -1,3 +1,12 @@
+terraform {
+  required_providers {
+    azurerm = {
+      source = "hashicorp/azurerm"
+      version = "4.12.0"
+    }
+  }
+} 
+
 resource "azurerm_storage_account" "sa" {
   name                     = var.name
   resource_group_name      = var.resource_group_name
@@ -8,12 +17,7 @@ resource "azurerm_storage_account" "sa" {
 
   tags = var.tags
 
-  dynamic "access_tier" {
-    for_each = var.access_tier != null ? [var.access_tier] : []
-    content {
-      access_tier = access_tier.value
-    }
-  }
+  access_tier = var.access_tier != null ? var.access_tier : null
 
   blob_properties {
     change_feed_enabled = var.blob_change_feed_enabled

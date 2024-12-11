@@ -231,6 +231,12 @@ variable "nodepool_name" {
 variable "nodepool_sku" {
   description = "The VM SKU for the default node pool"
   type        = string
+
+  validation {
+    condition     = contains(local.valid_nodepool_skus, var.nodepool_sku)
+    error_message = "Invalid nodepool SKU. Please use a valid SKU with zone redundancy."
+  }
+
 }
 
 variable "enable_auto_scaling" {
@@ -317,4 +323,9 @@ variable "additional_node_pools" {
     subnet_name = string
   }))
   default = []
+
+  validation {
+    condition = alltrue([for node_pool in var.additional_node_pools : contains(local.valid_nodepool_skus, node_pool.sku)])
+    error_message = "Invalid SKU in additional_node_pools. Please use valid SKUs with zone redundancy."
+  }
 }

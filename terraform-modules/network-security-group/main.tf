@@ -1,3 +1,12 @@
+terraform {
+  required_providers {
+    azurerm = {
+      source = "hashicorp/azurerm"
+      version = "4.12.0"
+    }
+  }
+}
+
 resource "azurerm_network_security_group" "nsg" {
   name                = var.name
   location            = var.location

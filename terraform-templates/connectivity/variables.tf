@@ -30,15 +30,34 @@ variable "subnets_hub" {
   }))
 }
 
-variable "nsg_appgw_name" {
-  description = "The name of the network security group for the application gateway"
-  type        = string
-}
-
 variable "vnet_hub_name" {
   description = "The name of the hub virtual network"
   type        = string
 }
+
+##### Application Gateway NSG ############
+
+variable "applicationGatewayNsgName" {
+  description = "The name of the Network Security Group for the Application Gateway subnet."
+  type        = string
+}
+
+variable "applicationGatewayNsgRules" {
+  description = "Security rules for the Application Gateway subnet NSG."
+  type = list(object({
+    name                       = string
+    priority                   = number
+    direction                  = string
+    access                     = string
+    protocol                   = string
+    source_port_range          = string
+    destination_port_range     = string
+    source_address_prefix      = string
+    destination_address_prefix = string
+  }))
+}
+
+
 
 ##### Application Gateway ##########
 variable "applicationGatewayCreatePublicIp" {
