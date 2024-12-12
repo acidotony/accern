@@ -1,6 +1,7 @@
 ###### Deplyment Flags #####
 
 deploy_app_gateway = true
+deploy_firewall_policy = true
 
 
 ###### Global ######
@@ -75,15 +76,20 @@ applicationGatewayNsgRules = [
   }
 ]
 
-
+#### Firewall Policy ####
+firewallPolicyName = "acn-appgw-prd-use2-waf-01"
+firewallPolicyTags = {
+  environment = "Management"
+  project     = "Accern"
+  deploymentBy = "Terraform"
+}
 
 #### Application Gateway #######
-#### Create a WAF policy resource and associate it with this AppGateway resource : acn-appgw-prd-use2-waf-01
 applicationGatewayResourceGroupName   = "acn-net-prd-use2-rg-01" 
 applicationGatewayLocation            = "eastus2"
 applicationGatewayName                = "acn-hub-prd-use2-agw-01" 
-applicationGatewaySkuName             = "WAF_v2" ## switch to WAF v2 SKU
-applicationGatewaySkuTier             = "WAF_v2" ## switch to WAF v2 SKU
+applicationGatewaySkuName             = "WAF_v2" 
+applicationGatewaySkuTier             = "WAF_v2" 
 applicationGatewaySkuCapacity         = 2
 applicationGatewaySubnetName          = "acn-hub-prd-use2-appgw-snet" 
 applicationGatewayGatewayIpConfigName = "gateway-ip-config"

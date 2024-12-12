@@ -32,5 +32,3 @@ output "appgtw_subnet_id" {
   value        = module.subnets_hub.subnet_ids
   
 }
-
-

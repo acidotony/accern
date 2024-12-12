@@ -1,27 +1,7 @@
-terraform {
-  required_providers {
-    azurerm = {
-      source = "hashicorp/azurerm"
-      version = "4.12.0"
-    }
-  }
-}
-
-resource "azurerm_public_ip" "public_ip" {
-  count               = var.create_public_ip ? 1 : 0
-  name                = "${var.appgtw_name}-public-ip"
-  location            = var.location
-  resource_group_name = var.resource_group_name
-  allocation_method   = "Static"
-  sku                 = "Standard"
-  tags = var.tags
-}
-
-resource "azurerm_application_gateway" "network" {
+resource "azurerm_application_gateway" "this" {
   name                = var.appgtw_name
   resource_group_name = var.resource_group_name
   location            = var.location
-  tags = var.tags
 
   sku {
     name     = var.sku_name
@@ -40,8 +20,8 @@ resource "azurerm_application_gateway" "network" {
   }
 
   frontend_ip_configuration {
-    name = var.frontend_ip_configuration_name
-    public_ip_address_id = var.create_public_ip ? azurerm_public_ip.public_ip[0].id : var.public_ip_address_id
+    name                 = var.frontend_ip_configuration_name
+    public_ip_address_id = azurerm_public_ip.this.id
   }
 
   backend_address_pool {
@@ -66,10 +46,40 @@ resource "azurerm_application_gateway" "network" {
 
   request_routing_rule {
     name                       = var.request_routing_rule_name
-    priority                   = var.request_routing_rule_priority
     rule_type                  = var.request_routing_rule_type
+    priority                   = var.request_routing_rule_priority
     http_listener_name         = var.listener_name
     backend_address_pool_name  = var.backend_address_pool_name
     backend_http_settings_name = var.http_setting_name
   }
+
+  firewall_policy_id = azurerm_web_application_firewall_policy.this.id
+
+
+  tags = var.tags
+}
+
+resource "azurerm_web_application_firewall_policy" "this" {
+  name                = var.firewall_policy_name
+  resource_group_name = var.resource_group_name
+  location            = var.location
+
+  managed_rules {
+    managed_rule_set {
+      type    = "OWASP"
+      version = "3.2"
+    }
+  }
+
+  tags = var.tags
+}
+
+resource "azurerm_public_ip" "this" {
+  name                = "${var.appgtw_name}-public-ip"
+  resource_group_name = var.resource_group_name
+  location            = var.location
+  allocation_method   = var.app_gateway_public_ip_allocation_method
+  sku                 = var.app_gateway_public_ip_sku
+
+  tags = var.tags
 }

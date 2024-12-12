@@ -125,6 +125,39 @@ variable "create_public_ip" {
   default     = false
 }
 
+variable "firewall_policy_id" {
+  description = "The ID of the firewall policy to attach to the Application Gateway. Leave null to skip attaching."
+  type        = string
+  default     = null
+}
+
+variable "firewall_policy_name" {
+  description = "The name of the Firewall Policy"
+  type = string
+  
+}
+
+# variable "firewallPolicySku" {
+#   description = "The sku of the Firewall Policy"
+#   type = string
+#   default = "Premium"
+  
+# }
+
+variable "app_gateway_public_ip_allocation_method" {
+  description = "Application Gateway Public Ip Allocation Method"
+  type = string
+  default = "Static"
+  
+}
+
+variable "app_gateway_public_ip_sku" {
+  description = "Application Gateway Public Ip Sku"
+  type = string
+  default = "Standard"
+  
+}
+
 variable "tags" {
   description = "Tags to assign to the resources"
   type        = map(string)

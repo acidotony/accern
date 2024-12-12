@@ -35,6 +35,7 @@ variable "vnet_hub_name" {
   type        = string
 }
 
+
 ##### Application Gateway NSG ############
 
 variable "applicationGatewayNsgName" {
@@ -57,6 +58,18 @@ variable "applicationGatewayNsgRules" {
   }))
 }
 
+
+##### Firewall Policy ######
+variable "firewallPolicyName" {
+  description = "The name of the Firewall Policy"
+  type = string
+  
+}
+
+variable "firewallPolicyTags" {
+  description = "Tags to assign to the firewall policy"
+  type        = map(string)
+}
 
 
 ##### Application Gateway ##########
@@ -292,6 +305,12 @@ variable "routeTableTags" {
 ##### Deployment Flags #####
 
 variable "deploy_app_gateway" {
+  description = "Flag to determine whether to deploy the Application Gateway"
+  type        = bool
+  default     = false
+}
+
+variable "deploy_firewall_policy" {
   description = "Flag to determine whether to deploy the Application Gateway"
   type        = bool
   default     = false

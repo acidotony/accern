@@ -1,4 +1,3 @@
-
 module "resource_group" {
   source              = "../../terraform-modules/resource-group"
   resource_group_name = var.resourceGroupName
@@ -15,15 +14,12 @@ module "vnet_hub" {
   tags                = var.tags
 }
 
-
-
 module "subnets_hub" {
   source                = "../../terraform-modules/subnets"
   resource_group_name   = module.resource_group.resource_group_name
   virtual_network_name  = var.vnet_hub_name
   subnets               = var.subnets_hub
   depends_on            = [module.vnet_hub]
-
 }
 
 module "application_gateway_nsg" {
@@ -39,13 +35,11 @@ module "application_gateway_nsg" {
 resource "azurerm_subnet_network_security_group_association" "this" {
   subnet_id                 = module.subnets_hub.subnet_ids[var.applicationGatewaySubnetName]
   network_security_group_id = module.application_gateway_nsg.id
-
 }
 
 module "app_gateway" {
   source = "../../terraform-modules/app-gateway"
   count  = var.deploy_app_gateway ? 1 : 0
-  depends_on = [ module.resource_group ]
   resource_group_name   = var.applicationGatewayResourceGroupName
   location              = var.applicationGatewayLocation
   appgtw_name           = var.applicationGatewayName
@@ -56,7 +50,7 @@ module "app_gateway" {
   frontend_port_name    = var.applicationGatewayFrontendPortName
   frontend_port_number  = var.applicationGatewayFrontendPortNumber
   frontend_ip_configuration_name = var.applicationGatewayFrontendIpConfigurationName
-  backend_address_pool_name = var.applicationGatewayBackendAddressPoolName
+  backend_address_pool_name      = var.applicationGatewayBackendAddressPoolName
   http_setting_name     = var.applicationGatewayHttpSettingName
   http_setting_cookie_based_affinity = var.applicationGatewayHttpSettingCookieBasedAffinity
   http_setting_path     = var.applicationGatewayHttpSettingPath
@@ -65,12 +59,16 @@ module "app_gateway" {
   http_setting_request_timeout = var.applicationGatewayHttpSettingRequestTimeout
   listener_name         = var.applicationGatewayListenerName
   listener_protocol     = var.applicationGatewayListenerProtocol
-  request_routing_rule_name = var.applicationGatewayRequestRoutingRuleName
+  request_routing_rule_name     = var.applicationGatewayRequestRoutingRuleName
   request_routing_rule_priority = var.applicationGatewayRequestRoutingRulePriority
-  request_routing_rule_type = var.applicationGatewayRequestRoutingRuleType
+  request_routing_rule_type     = var.applicationGatewayRequestRoutingRuleType
   create_public_ip      = var.applicationGatewayCreatePublicIp
   public_ip_address_id  = var.applicationGatewayPublicIpAddressId
   subnet_id             = module.subnets_hub.subnet_ids[var.applicationGatewaySubnetName]
-  tags                  = var.applicationGatewayTags
-}
 
+  firewall_policy_name = var.firewallPolicyName
+
+  tags                  = var.applicationGatewayTags
+
+  depends_on            = [module.resource_group]
+}

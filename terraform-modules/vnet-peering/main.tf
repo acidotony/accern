@@ -1,11 +1,4 @@
-terraform {
-  required_providers {
-    azurerm = {
-      source = "hashicorp/azurerm"
-      version = "4.12.0"
-    }
-  }
-}
+// Terraform Providers version tested 4.11.0 and 4.12.0
 
 resource "azurerm_virtual_network_peering" "main_to_hub" {
   count                     = var.create_hub ? 1 : 0
