@@ -63,6 +63,6 @@ The following input variables are required:
 
 | Name     | Version |
 |----------|---------|
-| azurerm  | >= 3.0  |
+| azurerm  | >= 4.0  |
 
 
