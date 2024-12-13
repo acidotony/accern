@@ -109,28 +109,33 @@ module "aks" {
   local_account_disabled        = var.local_account_disabled
   role_based_access_control_enabled = var.role_based_access_control_enabled
   tags                          = var.aks_tags
-  nodepool_name                 = var.nodepool_name
-  nodepool_sku                  = var.nodepool_sku
+  nodepool_name                 = var.default_nodepool_name
+  nodepool_sku                  = var.default_nodepool_sku
   subnet_id                     = module.subnets_spoke.subnet_ids[var.subnet_spoke_aks_name]
-  subnet_name = var.subnet_spoke_aks_name
-  enable_auto_scaling           = var.enable_auto_scaling
-  node_min_count                = var.node_min_count
-  node_max_count                = var.node_max_count
-  node_max_pods                 = var.node_max_pods
-  node_count                    = var.node_count
+  node_pool_zones       = var.default_node_pool_zones
+  auto_scaling_enabled           = var.default_auto_scaling_enabled
+  node_min_count                = var.default_node_min_count
+  node_max_count                = var.default_node_max_count
+  node_max_pods                 = var.default_node_max_pods
+  node_count                    = var.default_node_count
+  node_labels = var.default_node_labels
   identity_type                 = var.identity_type
   network_plugin                = var.network_plugin
+  network_plugin_mode           = var.network_plugin_mode
   network_policy                = var.network_policy
-  network_type = var.network_type
   load_balancer_sku             = var.load_balancer_sku
   rbac_aad                      = var.rbac_aad
   rbac_aad_managed              = var.rbac_aad_managed
-  rbac_aad_admin_group_object_ids   = var.rbac_aad_admin_group_object_ids
-  rbac_aad_azure_rbac_enabled       = var.rbac_aad_azure_rbac_enabled
+  rbac_aad_admin_group_object_ids = var.rbac_aad_admin_group_object_ids
+  rbac_aad_azure_rbac_enabled   = var.rbac_aad_azure_rbac_enabled
   rbac_aad_tenant_id            = var.rbac_aad_tenant_id
-  additional_node_pools = var.additional_node_pools
-  depends_on = [ module.resource_group ]
+  additional_node_pools         = var.additional_node_pools
+  pod_cidr                      = var.pod_cidr
+
+  # Dependencies
+  depends_on                    = [module.resource_group]
 }
+
 
 
 resource "azurerm_role_assignment" "attach_acr_to_aks" {

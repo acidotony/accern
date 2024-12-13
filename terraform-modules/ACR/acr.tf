@@ -11,3 +11,4 @@ resource "azurerm_container_registry" "acr" {
 }
 
 
+

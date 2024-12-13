@@ -23,5 +23,3 @@ output "identity_principal_id" {
   description = "The principal ID of the system-assigned identity used by the AKS cluster."
   value       = azurerm_kubernetes_cluster.aks.identity[0].principal_id
 }
-
-

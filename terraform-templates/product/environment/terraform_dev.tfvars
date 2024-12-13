@@ -89,15 +89,18 @@ aks_tags                           = {
   deploymentBy = "Terraform"
 
    }
-nodepool_name                  = "default"
-nodepool_sku                   = "Standard_DS2_v2"
-enable_auto_scaling            = true
-node_min_count                 = 1
-node_max_count                 = 5
-node_max_pods                  = 30
-node_count                     = 3
+default_nodepool_name                  = "default"
+default_nodepool_sku                   = "Standard_DS2_v2"
+default_auto_scaling_enabled            = true
+default_node_min_count                 = 1
+default_node_max_count                 = 3
+default_node_max_pods                  = 30
+default_node_count                     = null
+default_node_labels= {"env": "dev", "type": "System"}
+pod_cidr= "10.245.0.0/16"
 identity_type                  = "SystemAssigned"
 network_plugin                 = "azure"
+network_plugin_mode                 = "overlay"
 network_policy                 = "azure"
 network_type = "azure"
 load_balancer_sku              = "standard"
@@ -106,28 +109,35 @@ rbac_aad_managed               = true
 rbac_aad_admin_group_object_ids = ["bfcd94a6-8868-43d3-a3ca-3727505dd1a2"]
 rbac_aad_azure_rbac_enabled    = true
 rbac_aad_tenant_id             = "b5db11ac-8f37-4109-a146-5d7a302f5881"
-
+default_node_pool_zones = ["1", "2"]
 additional_node_pools = [
   {
     name                = "pool1"
-    subnet_name = "acn-aks-dev-eastus2-01-subnet"
+    subnet_name         = "acn-aks-dev-eastus2-01-subnet"
     sku                 = "Standard_DS3_v2"
-    count               = 3
-    enable_auto_scaling = true
-    min_count           = 2
-    max_count           = 4
+    count               = null
+    auto_scaling_enabled = true
+    min_count           = 1
+    max_count           = 3
     max_pods            = 30
+    labels = {"env": "dev", "type": "poc"}
+    mode = "User"
+    zones                = ["1", "2"]
   },
   {
     name                = "pool2"
-    subnet_name = "acn-aks-dev-eastus2-01-subnet"
+    subnet_name         = "acn-aks-dev-eastus2-01-subnet"
     sku                 = "Standard_DS2_v2"
-    count               = 2
-    enable_auto_scaling = true
-    min_count           = 1
-    max_count           = 2
+    count               = 3
+    auto_scaling_enabled = false
+    min_count           = null
+    max_count           = null
     max_pods            = 20
+    labels =  {"env": "stg"}
+    mode = "System"
+    zones                = ["1", "2"]
   }
 ]
+
 
 

@@ -1,149 +1,147 @@
-# terraform-azurerm-aks
 
-"This module deploys an [Azure Kubernetes services](https://learn.microsoft.com/en-us/azure/aks/concepts-clusters-workloads#what-is-kubernetes) (AKS) cluster in Azure, allowing for scalable and efficient container orchestration with Kubernetes."
+# AKS Terraform Module Documentation
 
-## Features
+This document provides guidance on using the AKS Terraform module to deploy and manage Azure Kubernetes Service (AKS) clusters, including configurations for autoscaling, role-based access control (RBAC), and additional node pools.
 
-- Deployment of Azure Kubernetes Service (AKS) with customizable node pools.
-- Configuration options for network plugins, policies, and role-based access control with Azure AD integration.
-- Support for both manual scaling and autoscaling of node pools.
-- Integration with Azure Container Registry if specified.
+---
 
+## Variables
 
+### AKS Cluster Configuration
 
-Ensure your environment variables are set as shown:
+- **`aks_name`** *(string)*: The name of the AKS cluster.
+  - Example: `my-aks-cluster`
+- **`location`** *(string)*: Azure region where the AKS cluster will be created.
+  - Example: `East US`
+- **`resource_group_name`** *(string)*: Name of the resource group for the AKS cluster.
+  - Example: `my-resource-group`
+- **`kubernetes_version`** *(string)*: Version of Kubernetes to use.
+  - Example: `1.25.6`
+- **`local_account_disabled`** *(bool)*: Disables local accounts on the cluster.
+  - Default: `false`
 
-```shell
-export ARM_SUBSCRIPTION_ID="<azure_subscription_id>"
-export ARM_TENANT_ID="<azure_subscription_tenant_id>"
-export ARM_CLIENT_ID="<service_principal_appid>"
-export ARM_CLIENT_SECRET="<service_principal_password>"
-```
+### Role-Based Access Control (RBAC)
 
-On Windows Powershell:
+- **`role_based_access_control_enabled`** *(bool)*: Enables RBAC.
+  - Default: `true`
+- **`rbac_aad`** *(bool)*: Enables Azure Active Directory integration.
+  - Default: `false`
+- **`rbac_aad_managed`** *(bool)*: Enables managed Azure AD integration.
+  - Default: `false`
+- **`rbac_aad_admin_group_object_ids`** *(list(string))*: List of AAD group object IDs with admin privileges.
+  - Example: `["1234abcd-5678efgh-ijklmnop"]`
+- **`rbac_aad_azure_rbac_enabled`** *(bool)*: Enables Azure RBAC for AKS.
+  - Default: `false`
+- **`rbac_aad_tenant_id`** *(string)*: Azure Active Directory tenant ID.
 
-```powershell
-$env:ARM_SUBSCRIPTION_ID="<azure_subscription_id>"
-$env:ARM_TENANT_ID="<azure_subscription_tenant_id>"
-$env:ARM_CLIENT_ID="<service_principal_appid>"
-$env:ARM_CLIENT_SECRET="<service_principal_password>"
-```
+### Default Node Pool
 
-## Requirements
+- **`nodepool_name`** *(string)*: Name of the default node pool.
+  - Example: `default`
+- **`nodepool_sku`** *(string)*: SKU (size) of VMs in the default node pool.
+  - Example: `Standard_DS2_v2`
+- **`node_count`** *(number)*: Initial node count (when autoscaling is disabled).
+  - Default: `1`
+- **`node_min_count`** *(number)*: Minimum node count for autoscaling.
+  - Default: `1`
+- **`node_max_count`** *(number)*: Maximum node count for autoscaling.
+  - Default: `5`
+- **`node_max_pods`** *(number)*: Maximum pods per node.
+  - Example: `110`
+- **`auto_scaling_enabled`** *(bool)*: Enables autoscaling.
+  - Default: `false`
+- **`node_labels`** *(map(string))*: Labels assigned to nodes.
+  - Default: `{}`
+- **`node_pool_zones`** *(list(string))*: Availability zones for the node pool.
+  - Example: `["1", "2"]`
+- **`subnet_id`** *(string)*: Subnet ID for the node pool.
 
-| Name | Version |
-|------|---------|
-| terraform | >= 1.3 |
-| azurerm | >= 3.0, < 4.0 |
+### Network Configuration
 
-## Providers
+- **`network_plugin`** *(string)*: The network plugin (e.g., `azure` or `kubenet`).
+- **`network_plugin_mode`** *(string)*: Specifies the mode for the network plugin.
+  - Example: `Overlay`
+- **`network_policy`** *(string)*: Network policy (e.g., `azure` or `calico`).
+- **`load_balancer_sku`** *(string)*: SKU for the load balancer.
+  - Default: `Standard`
+- **`pod_cidr`** *(string)*: CIDR range for pods.
 
-| Name | Version |
-|------|---------|
-| azurerm | >= 3.0, < 4.0 |
+### Additional Node Pools
 
-## Modules
+- **`additional_node_pools`** *(list(object))*: List of additional node pools.
+  - **Properties:**
+    - `name` *(string)*: Name of the node pool.
+    - `sku` *(string)*: VM size for the node pool.
+    - `count` *(number)*: Initial node count.
+    - `zones` *(list(string))*: Availability zones.
+    - `auto_scaling_enabled` *(bool)*: Enables autoscaling.
+    - `min_count` *(number)*: Minimum node count.
+    - `max_count` *(number)*: Maximum node count.
+    - `labels` *(map(string))*: Node labels.
+    - `mode` *(string)*: Node pool mode (e.g., `System` or `User`).
 
-No modules.
-
-## Resources
-
-| Name | Type |
-|------|------|
-| azurerm_kubernetes_cluster.aks |	resource |
-| azurerm_kubernetes_cluster_node_pool.additional |	resource |
-
-## Inputs
-
-| Name                               | Description                                                                                      | Type         | Default   | Required |
-|------------------------------------|--------------------------------------------------------------------------------------------------|--------------|-----------|:--------:|
-| `aks_name`                         | The name of the AKS cluster.                                                                     | `string`     | n/a       | yes      |
-| `location`                         | The Azure region where the AKS cluster will be created.                                          | `string`     | n/a       | yes      |
-| `resource_group_name`              | The name of the resource group in which to create the AKS cluster.                               | `string`     | n/a       | yes      |
-| `subnet_name`                      | The name of the subnet where the AKS cluster will be deployed.                                   | `string`     | n/a       | yes      |
-| `nodepool_name`                    | The name of the default node pool.                                                               | `string`     | n/a       | yes      |
-| `nodepool_sku`                     | The SKU (size) of the VMs in the default node pool.                                              | `string`     | n/a       | yes      |
-| `node_count`                       | The number of nodes in the default node pool, used if auto-scaling is disabled.                  | `number`     | `1`       | no       |
-| `kubernetes_version`               | Version of Kubernetes to use for the AKS cluster.                                                | `string`     | n/a       | yes      |
-| `network_plugin`                   | Network plugin to use for networking.                                                            | `string`     | n/a       | yes      |
-| `network_policy`                   | Network policy to use for controlling traffic between pods.                                      | `string`     | n/a       | yes      |
-| `load_balancer_sku`                | Specifies the SKU of the Load Balancer used for the AKS cluster.                                 | `string`     | n/a       | yes      |
-| `enable_auto_scaling`              | Boolean flag to specify whether auto-scaling is enabled for node pools.                          | `bool`       | `false`   | no       |
-| `node_min_count`                   | Minimum number of nodes in the node pool, applicable if auto-scaling is enabled.                 | `number`     | `1`       | no       |
-| `node_max_count`                   | Maximum number of nodes in the node pool, applicable if auto-scaling is enabled.                 | `number`     | `2`       | no       |
-| `node_max_pods`                    | Maximum number of pods that can run on an agent node.                                            | `number`     | `100`     | no       |
-| `role_based_access_control_enabled`| Enable Role Based Access Control.                                                                | `bool`       | `false`   | no       |
-| `rbac_aad`                         | Indicates if Azure Active Directory integration is enabled for RBAC.                             | `bool`       | `false`   | no       |
-| `rbac_aad_managed`                 | Indicates if the Azure AD integration is managed by Azure.                                       | `bool`       | `false`   | no       |
-| `rbac_aad_admin_group_object_ids`  | List of Azure AD group object IDs that will have admin role on the cluster.                      | `list(string)` | `[]`     | no       |
-| `rbac_aad_azure_rbac_enabled`      | Indicates if Azure RBAC for Kubernetes authorization is enabled.                                 | `bool`       | `false`   | no       |
-| `rbac_aad_tenant_id`               | The Tenant ID used for Azure Active Directory Application.                                       | `string`     | `null`    | no       |
-| `local_account_disabled`           | Indicates if local accounts on the AKS cluster should be disabled.                               | `bool`       | `false`   | no       |
-
-
+---
 
 ## Outputs
 
-| Name | Description |
-|------|-------------|
-| cluster_id |	The unique identifier of the AKS cluster |
-| kube_config	| Kubeconfig file contents for connecting to the Kubernetes cluster |
-| node_resource_group |	The name of the resource group which contains the nodes of the AKS cluster |
-| api_server_address |	The URL to the Kubernetes API server |
-| identity_principal_id	| The principal ID of the system-assigned identity used by the AKS cluster |
+- **`cluster_id`** *(string)*: Unique identifier of the AKS cluster.
+- **`kube_config`** *(sensitive)*: Kubeconfig file content for cluster access.
+- **`node_resource_group`** *(string)*: Resource group containing the cluster nodes.
+- **`api_server_address`** *(string)*: URL to the Kubernetes API server.
+- **`identity_principal_id`** *(string)*: Principal ID of the AKS system-assigned identity.
 
-## Example Variables 
-``` Bash
-# Resource Group and Location
-resource_group_name = "Optimus-aks-RG"
-location            = "East US"
+---
 
-# AKS Configuration
-aks_name                = "optimusaks"
-kubernetes_version      = "1.28"
-nodepool_name           = "defaultpool"
-nodepool_sku            = "Standard_DS2_v2"
-node_count              = 3
-identity_type           = "SystemAssigned"
-network_plugin          = "azure"
-network_policy          = "calico"
-network_type              = "VirtualMachineScaleSets"
-load_balancer_sku       = "standard"
-subnet_name             = "default"
-enable_auto_scaling     = true
-node_min_count          = 1
-node_max_count          = 5
-node_max_pods           = 110
-local_account_disabled  = false
+## Usage
 
-# Subnet ID
-subnet_ids = "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/vnet-rg/providers/Microsoft.Network/virtualNetworks/vnet-name/subnets/default"
+1. Define variables in a `.tfvars` file or directly in the Terraform configuration.
 
-# Additional Node Pools
-additional_node_pools = [
-  {
-    name        = "extraPool1"
-    sku         = "Standard_DS3_v2"
-    count       = 2
-    subnet_name = "extrasubnet1"
-  }
-]
+   Example `.tfvars` file:
+   ```hcl
+   aks_name                  = "my-aks-cluster"
+   location                  = "East US"
+   resource_group_name       = "my-resource-group"
+   kubernetes_version        = "1.30.0"
+   local_account_disabled    = true
+   role_based_access_control_enabled = true
+   nodepool_name             = "default"
+   nodepool_sku              = "Standard_DS2_v2"
+   node_count                = 1
+   node_min_count            = 1
+   node_max_count            = 3
+   auto_scaling_enabled      = true
+   subnet_id                 = "<subnet-id>"
+   additional_node_pools = [
+     {
+       name = "userpool"
+       sku = "Standard_DS2_v2"
+       count = 2
+       auto_scaling_enabled = true
+       min_count = 1
+       max_count = 5
+       labels = {
+         "env" = "production", "os"="linux"
+       }
+       zones = ["1", "2"]
+       mode = "User"
+     }
+   ]
+   ```
 
-# RBAC and Azure AD Integration
-role_based_access_control_enabled = true
-rbac_aad                         = true
-rbac_aad_managed                 = true
-rbac_aad_admin_group_object_ids  = ["group1-id", "group2-id"]
-rbac_aad_azure_rbac_enabled      = true
-rbac_aad_tenant_id               = "tenant-id-value"
+2. Initialize and apply the configuration.
+   ```bash
+   terraform init
+   terraform apply -var-file="<your-tfvars-file>.tfvars"
+   ```
 
-# Tags for Resources
-tags = {
-  "Environment" = "Development"
-  "Project"     = "Optimus Project"
-}
+3. Review the outputs for details like the cluster ID, kubeconfig, and API server URL.
 
-# Availability Zones for Nodes
-node_availability_zones = ["1", "2", "3"]
-```
+---
 
+## Notes
+
+- Ensure the `auto_scaling_enabled` variable is set to `true` if you define `min_count` and `max_count`.
+- The default node pool and additional node pools have separate configurations, so plan resource scaling accordingly.
+- Use labels and tags to organize and track your Kubernetes resources effectively.
+
+---

@@ -207,11 +207,9 @@ variable "local_account_disabled" {
 }
 
 variable "subnet_spoke_aks_name" {
-  description = "The Subnet name for the AKS cluster"
+  description = "The subnet name for the AKS cluster"
   type        = string
 }
-
-
 
 variable "role_based_access_control_enabled" {
   description = "Enable Role-Based Access Control for AKS"
@@ -223,45 +221,49 @@ variable "aks_tags" {
   type        = map(string)
 }
 
-variable "nodepool_name" {
+variable "default_nodepool_name" {
   description = "The name of the default node pool"
   type        = string
 }
 
-variable "nodepool_sku" {
+variable "default_nodepool_sku" {
   description = "The VM SKU for the default node pool"
   type        = string
 
   validation {
-    condition     = contains(local.valid_nodepool_skus, var.nodepool_sku)
+    condition     = contains(local.valid_nodepool_skus, var.default_nodepool_sku)
     error_message = "Invalid nodepool SKU. Please use a valid SKU with zone redundancy."
   }
-
 }
 
-variable "enable_auto_scaling" {
+variable "default_auto_scaling_enabled" {
   description = "Enable autoscaling for the default node pool"
   type        = bool
 }
 
-variable "node_min_count" {
+variable "default_node_min_count" {
   description = "Minimum number of nodes in the default node pool"
   type        = number
 }
 
-variable "node_max_count" {
+variable "default_node_max_count" {
   description = "Maximum number of nodes in the default node pool"
   type        = number
 }
 
-variable "node_max_pods" {
+variable "default_node_max_pods" {
   description = "Maximum pods per node"
   type        = number
 }
 
-variable "node_count" {
+variable "default_node_count" {
   description = "The initial node count if autoscaling is disabled"
   type        = number
+}
+
+variable "pod_cidr" {
+  description = "The CIDR range for pods."
+  type        = string
 }
 
 variable "identity_type" {
@@ -274,13 +276,18 @@ variable "network_plugin" {
   type        = string
 }
 
+variable "network_plugin_mode" {
+  description = "The network plugin mode for the AKS cluster"
+  type        = string
+}
+
 variable "network_policy" {
   description = "The network policy for the AKS cluster"
   type        = string
 }
 
 variable "network_type" {
-  description = "The network Type for the AKS cluster"
+  description = "The network type for the AKS cluster"
   type        = string
 }
 
@@ -315,12 +322,18 @@ variable "rbac_aad_tenant_id" {
 }
 
 variable "additional_node_pools" {
-  description = "A list of additional node pool objects, each specifying name, sku, count, and subnet_name."
+  description = "A list of additional node pool objects, each specifying name, sku, count, subnet_name, zones, and autoscaling configurations."
   type = list(object({
-    name        = string
-    sku         = string
-    count       = number
-    subnet_name = string
+    name               = string
+    sku                = string
+    count              = number
+    subnet_name        = string
+    auto_scaling_enabled = bool
+    zones              = list(string)
+    min_count          = number
+    max_count          = number
+    labels = map(string)
+    mode = string
   }))
   default = []
 
@@ -329,3 +342,17 @@ variable "additional_node_pools" {
     error_message = "Invalid SKU in additional_node_pools. Please use valid SKUs with zone redundancy."
   }
 }
+
+variable "default_node_pool_zones" {
+  description = "List of availability zones for the default node pool"
+  type        = list(string)
+  default     = []
+}
+variable "default_node_labels" {
+  description = "Default Node Pool Labels"
+  type= map(string)
+  default = {}
+  
+}
+
+

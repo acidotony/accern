@@ -1,8 +1,6 @@
 ###### Deplyment Flags #####
 
 deploy_app_gateway = true
-deploy_firewall_policy = true
-
 
 ###### Global ######
 resourceGroupName = "acn-net-prd-use2-rg-01" 
@@ -115,44 +113,5 @@ applicationGatewayTags = {
   deploymentBy = "Terraform"
 }
 
-#### VPN Point-to-Site #######
-
-vpnP2sGatewayName           = "acn-hub-prd-use2-vgw-01" 
-vpnP2sGatewayScaleUnit      = 1
-vpnP2sConnectionName        = "acn-vpn-prd-use2-p2s-conn" 
-vpnClientAddressPrefixes    = ["192.168.0.0/24"] 
 
 
-# VPN Server Configuration (Create or Use Existing)
-includeVpnServerConfiguration = true
-vpnServerConfigurationName    = "acn-vpn-prd-use2-cfg" 
-vpnAuthenticationTypes        = ["ADD"]
-includeClientRootCertificate  = true
-
-vpnTags = {
-  environment = "Production"
-  deploymentBy = "Terraform"
-}
-
-#### Route Table #######  =====> SKIP this for now
-
-routeTableName = "acn-hub-eastus2-rt"
-
-routeTableBgpRoutePropagationEnabled = true
-
-routeTableRoutes = [
-  {
-    name           = "to-vnet-local"
-    address_prefix = "10.0.0.0/16"
-    next_hop_type  = "VnetLocal"
-  },
-  {
-    name           = "to-internet"
-    address_prefix = "0.0.0.0/0"
-    next_hop_type  = "Internet"
-  }
-]
-routeTableTags = {
-  environment = "Production"
-  deploymentBy = "Terraform"
-}
