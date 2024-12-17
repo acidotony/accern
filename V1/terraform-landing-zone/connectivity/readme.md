@@ -25,7 +25,7 @@ A hub VNet is created with the specified address space and tags.
 Subnets within the hub VNet are deployed with flexible configuration for delegation, service endpoints, and address prefixes.
 
 ### Application Gateway
-An Application Gateway is deployed with optional WAF policies and integration with a dedicated subnet and NSG.
+An Application Gateway could be deployed using a flag with optional WAF policies and integration with a dedicated subnet and NSG.
 
 
 ## Required Inputs
@@ -147,7 +147,7 @@ applicationGatewayNsgRules = [
 
 ## Remote State Configuration
 
-he Terraform state is stored in an Azure Storage Account. This setup ensures that the Terraform state file is securely stored and accessible by multiple team members for consistent deployments. The Storage Account must already be deployed in a different resource group, and the Terraform deployment process must have the necessary permissions to access this Storage Account.
+The Terraform state is stored in an Azure Storage Account. This setup ensures that the Terraform state file is securely stored and accessible by multiple team members for consistent deployments. The Storage Account must already be deployed in a different resource group, and the Terraform deployment process must have the necessary permissions to access this Storage Account.
 
 ### Backend Configuration
 

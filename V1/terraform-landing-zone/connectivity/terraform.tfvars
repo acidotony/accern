@@ -11,19 +11,19 @@ tags = {
   deploymentBy = "Terraform"
 }
 
-address_space_hub = ["10.0.0.0/21"]
+address_space_hub = ["10.10.0.0/22"]
 
 subnets_hub = {
   "acn-hub-prd-use2-appgw-snet" = { 
-    address_prefixes        = ["10.0.5.0/24"]  
+    address_prefixes        = ["10.10.0.64/26"]  
     service_endpoints       = []
     delegation              = false
     delegation_name         = ""
     service_delegation_name = ""
     actions                 = []
   }
-  "acn-hub-prd-use2-web-snet" = { ## Align names to standard: agregar/renombrar a las otras necesarias del hub / AzureFirewall - VirtualGateway
-    address_prefixes        = ["10.0.4.0/24"]  
+  "acn-hub-prd-use2-gateway-snet" = { ## Align names to standard: agregar/renombrar a las otras necesarias del hub / AzureFirewall - VirtualGateway
+    address_prefixes        = ["10.10.0.128/26"]  
     service_endpoints       = []
     delegation              = false
     delegation_name         = ""

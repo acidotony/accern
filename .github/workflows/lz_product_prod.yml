@@ -1,0 +1,89 @@
+name: Terraform Product deployment 
+
+on: 
+  push:
+    branches:
+      - main
+    paths:
+      - '/terraform-landing-zone/product-prod/**'
+      - '.github/workflows/lz_product_prod.yml'
+      
+  workflow_dispatch:
+
+env:
+  APPLICATION_NAME: "azlzproductprod"
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  TerraformProductprodDryRun:
+    name: Terraform Product Deployment
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+      
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_version: 1.9.3
+        terraform_wrapper: false
+
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        client-id: ${{secrets.AZURE_PRODUCT_PROD_SUBSCRIPTION_CLIENT_ID}}
+        tenant-id: ${{secrets.AZURE_TENANT_ID}}
+        subscription-id: ${{secrets.AZURE_PRODUCT_PROD_SUBSCRIPTION_ID}}
+    
+    - name: Terraform Init
+      env:
+        ARM_CLIENT_ID: ${{ secrets.AZURE_PRODUCT_PROD_SUBSCRIPTION_CLIENT_ID }}
+        ARM_CLIENT_SECRET: ${{ secrets.AZURE_PRODUCT_PROD_SUBSCRIPTION_CLIENT_SECRET }}
+        ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_PRODUCT_PROD_SUBSCRIPTION_ID }}
+        ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      run: |
+        terraform init 
+
+        terraform plan -out=tfplan
+
+      working-directory: ./terraform-landing-zone/product-prod
+
+  TerraformProductprodDeployment:
+    name: IaC LZ Connectivity Deployment
+    runs-on: ubuntu-latest
+    needs: TerraformProductprodDryRun
+    if: ${{ github.event_name == 'workflow_dispatch' }}
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+      
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_version: 1.9.3
+        terraform_wrapper: false
+
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        client-id: ${{secrets.AZURE_PRODUCT_PROD_SUBSCRIPTION_CLIENT_ID}}
+        tenant-id: ${{secrets.AZURE_TENANT_ID}}
+        subscription-id: ${{secrets.AZURE_PRODUCT_PROD_SUBSCRIPTION_ID}}
+    
+    - name: Terraform Init and Plan
+      env:
+        ARM_CLIENT_ID: ${{ secrets.AZURE_PRODUCT_PROD_SUBSCRIPTION_CLIENT_ID }}
+        ARM_CLIENT_SECRET: ${{ secrets.AZURE_PRODUCT_PROD_SUBSCRIPTION_CLIENT_SECRET }}
+        ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_PRODUCT_PROD_SUBSCRIPTION_ID }}
+        ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      run: |
+        terraform init -backend-config="access_key=${{ secrets.TF_BACKEND_STORAGE_ACCOUNT_ACCESS_KEY }}"
+        
+        terraform apply --auto-approve
+      working-directory: ./terraform-landing-zone/product-prod
+  

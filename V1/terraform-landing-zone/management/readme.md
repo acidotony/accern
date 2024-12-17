@@ -30,13 +30,6 @@ terraform {
 2. **State Integrity**: Prevents state corruption by enforcing a single source of truth.
 3. **Disaster Recovery**: Ensures state files are securely backed up in Azure Storage.
 
-### Notes
-
-- To initialize the backend, use the command:
-  ```bash
-  terraform init
-  ```
-
 ## Providers Tested
 
 This module has been tested with the following versions of the AzureRM provider:
@@ -127,7 +120,22 @@ tags = {
 }
 ```
 
+## Terraform deployment 
+
+- To initialize the backend and test the deployment, use the commands from the management folder:
+  ```bash
+  terraform init 
+ 
+  terraform plan 
+  ```
+
+- To deploy, use the command:
+  ```bash
+  terraform apply 
+  ```
+
 ## Notes
 
-- Ensure you have the required permissions for creating management groups and assigning policies.
+- Ensure you have the required permissions for creating management groups and assigning policies (Global Admin).
+- Ensure you have permissions to Terraform Backend Storage account (minimal: Storage Blob Data Contributor)
 - Update the subscription IDs and management group parent IDs as per your Azure environment.

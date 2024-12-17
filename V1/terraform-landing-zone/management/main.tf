@@ -88,7 +88,7 @@ module "allowed_locations" {
     "e12ce4d3-a17b-4aa7-8b8a-10abb4546edf"
   ]
   management_group_id  = "/providers/Microsoft.Management/managementGroups/Accern-Root"
-  locations            = ["eastus", "eastus2"]
+  locations            = ["eastus2", "westus2"]
 }
 
 

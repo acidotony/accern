@@ -1,18 +1,26 @@
-resource_group_name = "acn-product-dev-eastus01-rg"
+resource_group_name = "acn-product-prd-eastus01-rg"
 location = "eastus2"
 tags = {
-  environment = "development"
+  environment = "production"
   project     = "Accern"
   deploymentBy = "Terraform"
 }
 
-address_space_spoke = ["10.1.0.0/16"]
+address_space_spoke = ["10.10.4.0/22"]
 
-subnet_spoke_aks_name = "acn-aks-dev-eastus2-01-subnet"
+subnet_spoke_aks_name = "acn-aks-prd-eastus2-01-subnet"
 
 subnets_spoke = {
-  "acn-aks-dev-eastus2-01-subnet" = {
-    address_prefixes        = ["10.1.0.0/24"]  
+  "acn-aks-prd-eastus2-01-subnet" = {
+    address_prefixes        = ["10.10.4.0/23"]  
+    service_endpoints       = []
+    delegation              = false
+    delegation_name         = ""
+    service_delegation_name = ""
+    actions                 = []
+  },
+  "acn-private-prd-eastus2-01-subnet" = {
+    address_prefixes        = ["10.10.6.0/26"]  
     service_endpoints       = []
     delegation              = false
     delegation_name         = ""
@@ -23,9 +31,9 @@ subnets_spoke = {
 
 nsgs = {
   nsg1 = {
-    name                = "acn-aks-dev-eastus2-01-nsg"
+    name                = "acn-aks-prd-eastus2-01-nsg"
     location            = "eastus2"
-    resource_group_name = "acn-product-dev-eastus01-rg"
+    resource_group_name = "acn-product-prd-eastus01-rg"
     rules = [
       {
         name                       = "Allow-HTTP"
@@ -55,19 +63,19 @@ nsgs = {
 }
 
 
-vnet_spoke_name = "acn-spoke-dev-eastus2-01-vnet"
+vnet_spoke_name = "acn-spoke-prd-eastus2-01-vnet"
 
 
-key_vault_name = "acn-kv-x0"
+key_vault_name = "acnproduse2kv01"
 tenant_id    = "b5db11ac-8f37-4109-a146-5d7a302f5881"
 object_id    = "bfcd94a6-8868-43d3-a3ca-3727505dd1a2"
 
-storage_account_name = "acnaksprd00"
+storage_account_name = "acnappshareprduse2stg01"
 
 
 
 ### ACR Values ####
-acr_name             = "acnprd00"
+acr_name             = "acnprduse2acr01"
 acr_sku              = "Standard"
 admin_enabled        = true
 public_network_access_enabled = true
@@ -80,12 +88,12 @@ acr_tags                           = {
 
 
 ### AKS Values ####
-aks_name                       = "acn-aks-dev-01"
+aks_name                       = "acn-aks-prd-01"
 kubernetes_version             = "1.30"
 local_account_disabled         = true
 role_based_access_control_enabled = true
 aks_tags                           = { 
-  environment = "development"
+  environment = "production"
   deploymentBy = "Terraform"
 
    }
@@ -96,7 +104,7 @@ default_node_min_count                 = 1
 default_node_max_count                 = 3
 default_node_max_pods                  = 30
 default_node_count                     = null
-default_node_labels= {"env": "dev", "type": "System"}
+default_node_labels= {"env": "prod", "type": "System"}
 pod_cidr= "10.245.0.0/16"
 identity_type                  = "SystemAssigned"
 network_plugin                 = "azure"
@@ -113,28 +121,28 @@ default_node_pool_zones = ["1", "2"]
 additional_node_pools = [
   {
     name                = "pool1"
-    subnet_name         = "acn-aks-dev-eastus2-01-subnet"
+    subnet_name         = "acn-aks-prd-eastus2-01-subnet"
     sku                 = "Standard_DS3_v2"
     count               = null
     auto_scaling_enabled = true
     min_count           = 1
     max_count           = 3
     max_pods            = 30
-    labels = {"env": "dev", "type": "poc"}
+    labels = {"env": "prod", "type": "User"}
     mode = "User"
     zones                = ["1", "2"]
   },
   {
     name                = "pool2"
-    subnet_name         = "acn-aks-dev-eastus2-01-subnet"
+    subnet_name         = "acn-aks-prd-eastus2-01-subnet"
     sku                 = "Standard_DS2_v2"
     count               = 3
     auto_scaling_enabled = false
     min_count           = null
     max_count           = null
     max_pods            = 20
-    labels =  {"env": "stg"}
-    mode = "System"
+    labels = {"env": "prod", "type": "User"}
+    mode = "User"
     zones                = ["1", "2"]
   }
 ]

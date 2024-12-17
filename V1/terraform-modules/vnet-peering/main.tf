@@ -12,7 +12,7 @@ resource "azurerm_virtual_network_peering" "main_to_hub" {
 
 resource "azurerm_virtual_network_peering" "hub_to_main" {
   count                     = var.create_hub ? 1 : 0
-  name                      = "${var.vnet_hub_name}-peer-hub-to-main"
+  name                      = "${var.vnet_hub_name}-peer-hub-to-${var.vnet_main_name}"
   resource_group_name       = var.resource_group_name_hub
   virtual_network_name      = var.virtual_network_name_hub
   remote_virtual_network_id = var.remote_virtual_network_id_main

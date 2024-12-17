@@ -1,12 +1,3 @@
-terraform {
-  required_providers {
-    azurerm = {
-      source  = "hashicorp/azurerm"
-      version = "4.13.0"
-    }
-  }
-}
-
 resource "azurerm_management_group" "this" {
   for_each = { for mg in var.management_groups : mg.name => mg }
 

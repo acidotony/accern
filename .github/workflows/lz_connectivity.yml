@@ -6,7 +6,7 @@ on:
     branches:
       - main
     paths:
-       - 'terraform-templates/connectivity/**'
+       - 'terraform-landing-zone/connectivity/**'
        - '.github/workflows/lz_connectivity.yml'
   
   workflow_dispatch:
@@ -36,27 +36,22 @@ jobs:
     - name: Azure Login
       uses: azure/login@v1
       with:
-        client-id: ${{secrets.AZURE_CLIENT_ID}}
+        client-id: ${{secrets.AZURE_PLATFORM_CONNECTIVITY_SUBSCRIPTION_CLIENT_ID}}
         tenant-id: ${{secrets.AZURE_TENANT_ID}}
-        subscription-id: ${{secrets.AZURE_SUBSCRIPTION_ID}}
+        subscription-id: ${{secrets.AZURE_PLATFORM_CONNECTIVITY_SUBSCRIPTION_ID}}
     
     - name: Terraform Init and Plan
       env:
-        ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-        ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
-        ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        ARM_CLIENT_ID: ${{ secrets.AZURE_PLATFORM_CONNECTIVITY_SUBSCRIPTION_CLIENT_ID }}
+        ARM_CLIENT_SECRET: ${{ secrets.AZURE_PLATFORM_CONNECTIVITY_SUBSCRIPTION_CLIENT_SECRET }}
+        ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_PLATFORM_CONNECTIVITY_SUBSCRIPTION_ID }}
         ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
       run: |
-        terraform init \
-           -backend-config="resource_group_name=${{ vars.BACKEND_RESOURCE_GROUP_NAME }}" \
-           -backend-config="storage_account_name=${{ vars.BACKEND_STORAGE_ACCOUNT_NAME }}" \
-           -backend-config="container_name=${{ vars.BACKEND_CONTAINER_NAME }}" \
-           -backend-config="access_key=${{ secrets.BACKEND_ACCESS_KEY }}" \
-           -backend-config="key=terraform.tfstate" \
-           -reconfigure
+        terraform init -backend-config="access_key=${{ secrets.TF_BACKEND_STORAGE_ACCOUNT_ACCESS_KEY }}" 
         
         terraform plan -var-file=terraform.tfvars -out=tfplan
-      working-directory: ./terraform-templates/connectivity
+
+      working-directory: ./terraform-landing-zone/connectivity
 
   TerraformConnectivityDeployment:
     name: IaC LZ Connectivity Deployment
@@ -77,25 +72,19 @@ jobs:
     - name: Azure Login
       uses: azure/login@v1
       with:
-        client-id: ${{secrets.AZURE_CLIENT_ID}}
+        client-id: ${{secrets.AZURE_PLATFORM_CONNECTIVITY_SUBSCRIPTION_CLIENT_ID}}
         tenant-id: ${{secrets.AZURE_TENANT_ID}}
-        subscription-id: ${{secrets.AZURE_SUBSCRIPTION_ID}}
+        subscription-id: ${{secrets.AZURE_PLATFORM_CONNECTIVITY_SUBSCRIPTION_ID}}
     
     - name: Terraform Init and Apply
       env:
-        ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-        ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
-        ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        ARM_CLIENT_ID: ${{ secrets.AZURE_PLATFORM_CONNECTIVITY_SUBSCRIPTION_CLIENT_ID }}
+        ARM_CLIENT_SECRET: ${{ secrets.AZURE_PLATFORM_CONNECTIVITY_SUBSCRIPTION_CLIENT_SECRET }}
+        ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_PLATFORM_CONNECTIVITY_SUBSCRIPTION_ID }}
         ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
       run: |
-        terraform init \
-           -backend-config="resource_group_name=${{ vars.BACKEND_RESOURCE_GROUP_NAME }}" \
-           -backend-config="storage_account_name=${{ vars.BACKEND_STORAGE_ACCOUNT_NAME }}" \
-           -backend-config="container_name=${{ vars.BACKEND_CONTAINER_NAME }}" \
-           -backend-config="access_key=${{ secrets.BACKEND_ACCESS_KEY }}" \
-           -backend-config="key=terraform.tfstate" \
-           -reconfigure
+        terraform init -backend-config="access_key=${{ secrets.TF_BACKEND_STORAGE_ACCOUNT_ACCESS_KEY }}"
         
         terraform apply -var-file=terraform.tfvars --auto-approve
-      working-directory: ./terraform-templates/connectivity
+      working-directory: ./terraform-landing-zone/connectivity
   
